@@ -22,8 +22,10 @@ function project(mission: Mission) {
 
 export function MapView({ mission }: { mission: Mission }) {
   const points = useMemo(() => project(mission), [mission]);
-  const [selected, setSelected] = useState(0);
-  const active = points[Math.min(selected, points.length - 1)];
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [pinned, setPinned] = useState<number | null>(null);
+  const activeIndex = pinned ?? hovered;
+  const active = activeIndex === null ? null : points[activeIndex];
   const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x} ${p.y}`).join(" ");
 
   return (
@@ -47,18 +49,21 @@ export function MapView({ mission }: { mission: Mission }) {
             key={i}
             type="button"
             aria-label={`Leitura ${p.reading.timestamp}`}
-            onMouseEnter={() => setSelected(i)}
-            onFocus={() => setSelected(i)}
-            onClick={() => setSelected(i)}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered((h) => (h === i ? null : h))}
+            onFocus={() => setHovered(i)}
+            onBlur={() => setHovered((h) => (h === i ? null : h))}
+            onClick={() => setPinned((p0) => (p0 === i ? null : i))}
             style={{ left: `${p.x}%`, top: `${p.y}%` }}
             className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all ${
-              i === selected
+              i === activeIndex
                 ? "h-3.5 w-3.5 border-2 border-track bg-panel-strong"
                 : "h-2 w-2 bg-track/0 hover:bg-track/70"
             }`}
           />
         ))}
       </div>
+
 
 
       <header className="absolute left-5 top-5 w-72 panel-surface bg-panel-strong/90 px-4 py-3 backdrop-blur">
