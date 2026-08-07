@@ -86,12 +86,15 @@ export function MapView({ mission }: { mission: Mission }) {
         <Compass className="h-5 w-5" />
       </button>
 
-      <div
-        className="absolute z-10 max-w-[calc(100%-2rem)]"
-        style={{ left: `min(${active!.x + 6}%, calc(100% - 19rem))`, top: `min(${active!.y}%, calc(100% - 26rem))` }}
-      >
-        <ReadingCard reading={active!.reading} mission={mission} />
-      </div>
+      {active && (
+        <div
+          className="pointer-events-none absolute z-10 max-w-[calc(100%-2rem)]"
+          style={{ left: `min(${active.x + 6}%, calc(100% - 19rem))`, top: `min(${active.y}%, calc(100% - 26rem))` }}
+        >
+          <ReadingCard reading={active.reading} mission={mission} />
+        </div>
+      )}
+
 
       <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col overflow-hidden rounded-md border border-border bg-panel-strong/85 backdrop-blur">
         <button type="button" aria-label="Aproximar" className="grid h-9 w-9 place-items-center text-foreground">
