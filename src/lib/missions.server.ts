@@ -79,37 +79,38 @@ export async function loadMissions(): Promise<Mission[]> {
 
     for (const r of rows) {
       const id = r["mission_id"] || fallbackId;
-
-    const id = r["mission_id"] ?? "";
-    if (!id) continue;
-    let mission = byId.get(id);
-    if (!mission) {
-      mission = {
-        id,
-        data: r["data"] ?? "",
-        local: r["local"] ?? "",
-        inicio: r["inicio"] ?? "",
-        fim: r["fim"] ?? "",
-        duracaoHoras: hours(r["inicio"] ?? "0:00", r["fim"] ?? "0:00"),
-        readings: [],
-      };
-      byId.set(id, mission);
+      if (!id) continue;
+      let mission = byId.get(id);
+      if (!mission) {
+        mission = {
+          id,
+          data: r["data"] ?? "",
+          local: r["local"] ?? "",
+          inicio: r["inicio"] ?? "",
+          fim: r["fim"] ?? "",
+          duracaoHoras: hours(r["inicio"] ?? "0:00", r["fim"] ?? "0:00"),
+          readings: [],
+        };
+        byId.set(id, mission);
+      }
+      mission.readings.push({
+        timestamp: r["timestamp"] ?? "",
+        lat: Number(r["lat"]),
+        lon: Number(r["lon"]),
+        ph: r["ph"] ?? "",
+        oxigenio_dissolvido: r["oxigenio_dissolvido"] ?? "",
+        temperatura: r["temperatura"] ?? "",
+        turbidez: r["turbidez"] ?? "",
+        salinidade: r["salinidade"] ?? "",
+        mono_p: r["mono_p"] ?? "",
+        multi_p: r["multi_p"] ?? "",
+        camera_r: r["camera_r"] ?? "",
+        camera_v: r["camera_v"] ?? "",
+      });
     }
-    mission.readings.push({
-      timestamp: r["timestamp"] ?? "",
-      lat: Number(r["lat"]),
-      lon: Number(r["lon"]),
-      ph: r["ph"] ?? "",
-      oxigenio_dissolvido: r["oxigenio_dissolvido"] ?? "",
-      temperatura: r["temperatura"] ?? "",
-      turbidez: r["turbidez"] ?? "",
-      salinidade: r["salinidade"] ?? "",
-      mono_p: r["mono_p"] ?? "",
-      multi_p: r["multi_p"] ?? "",
-      camera_r: r["camera_r"] ?? "",
-      camera_v: r["camera_v"] ?? "",
-    });
   }
+
+
 
   return [...byId.values()].sort((a, b) => (a.data < b.data ? 1 : -1));
 }
