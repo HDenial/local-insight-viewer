@@ -1,5 +1,6 @@
 import { Check, ChevronRight, SlidersHorizontal, User, CalendarDays } from "lucide-react";
 import type { Mission } from "@/lib/missions.functions";
+import { formatData } from "@/lib/format";
 
 const coletas = [
   { label: "PH", tone: "text-ok" },
@@ -62,7 +63,7 @@ export function MissionPanel({
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                 <div className="min-w-0 space-y-1.5">
                   <p className={`font-display text-lg font-semibold ${isActive ? "text-primary" : ""}`}>
-                    Operação: <span className="font-sans text-base font-medium">{m.data}</span>
+                    Operação: <span className="font-sans text-base font-medium">{formatData(m.data)}</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Local: <span className="text-foreground/90">{m.local}</span>
@@ -100,7 +101,7 @@ export function MissionPanel({
 
       <footer className="flex items-center justify-end gap-2 border-t border-border px-6 py-3 text-sm text-primary">
         <CalendarDays className="h-4 w-4" />
-        Selecionada: {selected?.data ?? "—"}
+        Selecionada: {selected ? formatData(selected.data) : "—"}
       </footer>
     </aside>
   );

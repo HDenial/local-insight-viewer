@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import satellite from "@/assets/satellite-bay.jpg";
 import type { Mission } from "@/lib/missions.functions";
 import { ReadingCard } from "./ReadingCard";
+import { formatData } from "@/lib/format";
 
 function project(mission: Mission) {
   const lats = mission.readings.map((r) => r.lat);
@@ -71,7 +72,7 @@ export function MapView({ mission }: { mission: Mission }) {
         <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Missão selecionada</p>
         <p className="mt-1 flex items-center gap-2 font-display text-2xl font-semibold">
           <Calendar className="h-5 w-5 text-primary" />
-          {mission.data}
+          {formatData(mission.data)}
         </p>
         <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
           <MapPin className="h-3.5 w-3.5 shrink-0" />
