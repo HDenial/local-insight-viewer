@@ -30,11 +30,31 @@ export type Mission = {
 const CSV_DIR = process.env["CSV_DIR"] ?? path.join(process.cwd(), "data");
 const CSV_FILE = process.env["CSV_FILE"] ?? "leituras.csv";
 
+function splitLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (quoted && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else quoted = !quoted;
+    } else if (ch === "," && !quoted) {
+      out.push(cur);
+      cur = "";
+    } else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
 function parseCsv(text: string): Record<string, string>[] {
   const lines = text.trim().split(/\r?\n/);
-  const header = lines[0]!.split(",").map((h) => h.trim());
+  const header = splitLine(lines[0]!).map((h) => h.trim());
   return lines.slice(1).map((line) => {
-    const cells = line.split(",");
+    const cells = splitLine(line);
     const row: Record<string, string> = {};
     header.forEach((h, i) => (row[h] = (cells[i] ?? "").trim()));
     return row;
