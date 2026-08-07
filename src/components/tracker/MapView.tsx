@@ -5,21 +5,20 @@ import type { Mission } from "@/lib/missions.functions";
 import { ReadingCard } from "./ReadingCard";
 import { formatData } from "@/lib/format";
 
+/** Recorte geográfico fixo da imagem de satélite: cada missão mantém sua própria área de água. */
+const LON_MIN = -43.14;
+const LON_SPAN = 0.1;
+const LAT_MAX = -22.9;
+const LAT_SPAN = 0.08;
+
 function project(mission: Mission) {
-  const lats = mission.readings.map((r) => r.lat);
-  const lons = mission.readings.map((r) => r.lon);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-  const spanLat = maxLat - minLat || 1;
-  const spanLon = maxLon - minLon || 1;
   return mission.readings.map((r) => ({
     reading: r,
-    x: 34 + ((r.lon - minLon) / spanLon) * 34,
-    y: 42 + ((maxLat - r.lat) / spanLat) * 34,
+    x: ((r.lon - LON_MIN) / LON_SPAN) * 100,
+    y: ((LAT_MAX - r.lat) / LAT_SPAN) * 100,
   }));
 }
+
 
 export function MapView({ mission }: { mission: Mission }) {
   const points = useMemo(() => project(mission), [mission]);
