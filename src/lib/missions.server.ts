@@ -27,9 +27,9 @@ export type Mission = {
   readings: Reading[];
 };
 
-/** Pasta local onde os CSVs de leitura ficam. Configurável via CSV_DIR. */
+/** Pasta local onde os CSVs de leitura ficam (um arquivo por missão). Configurável via CSV_DIR. */
 const CSV_DIR = process.env["CSV_DIR"] ?? path.join(process.cwd(), "data");
-const CSV_FILE = process.env["CSV_FILE"] ?? "leituras.csv";
+
 
 function splitLine(line: string): string[] {
   const out: string[] = [];
