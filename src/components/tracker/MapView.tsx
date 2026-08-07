@@ -40,15 +40,6 @@ export function MapView({ mission }: { mission: Mission }) {
 
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
         <path d={path} fill="none" stroke="var(--track)" strokeWidth="0.35" className="track-glow" />
-        <line
-          x1={points[0]!.x}
-          y1={points[0]!.y}
-          x2={active!.x}
-          y2={active!.y}
-          stroke="var(--track)"
-          strokeWidth="0.18"
-          opacity="0.7"
-        />
       </svg>
 
       <div className="absolute inset-0">
@@ -57,6 +48,8 @@ export function MapView({ mission }: { mission: Mission }) {
             key={i}
             type="button"
             aria-label={`Leitura ${p.reading.timestamp}`}
+            onMouseEnter={() => setSelected(i)}
+            onFocus={() => setSelected(i)}
             onClick={() => setSelected(i)}
             style={{ left: `${p.x}%`, top: `${p.y}%` }}
             className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all ${
@@ -67,6 +60,7 @@ export function MapView({ mission }: { mission: Mission }) {
           />
         ))}
       </div>
+
 
       <header className="absolute left-5 top-5 w-72 panel-surface bg-panel-strong/90 px-4 py-3 backdrop-blur">
         <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Missão selecionada</p>

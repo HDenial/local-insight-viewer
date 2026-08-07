@@ -1,5 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+
 
 export type Reading = {
   timestamp: string;
@@ -26,9 +27,9 @@ export type Mission = {
   readings: Reading[];
 };
 
-/** Pasta local onde os CSVs de leitura ficam. Configurável via CSV_DIR. */
+/** Pasta local onde os CSVs de leitura ficam (um arquivo por missão). Configurável via CSV_DIR. */
 const CSV_DIR = process.env["CSV_DIR"] ?? path.join(process.cwd(), "data");
-const CSV_FILE = process.env["CSV_FILE"] ?? "leituras.csv";
+
 
 function splitLine(line: string): string[] {
   const out: string[] = [];
@@ -68,41 +69,48 @@ function hours(inicio: string, fim: string) {
 }
 
 export async function loadMissions(): Promise<Mission[]> {
-  const text = await readFile(path.join(CSV_DIR, CSV_FILE), "utf8");
-  const rows = parseCsv(text);
+  const files = (await readdir(CSV_DIR)).filter((f) => f.toLowerCase().endsWith(".csv")).sort();
   const byId = new Map<string, Mission>();
 
-  for (const r of rows) {
-    const id = r["mission_id"] ?? "";
-    if (!id) continue;
-    let mission = byId.get(id);
-    if (!mission) {
-      mission = {
-        id,
-        data: r["data"] ?? "",
-        local: r["local"] ?? "",
-        inicio: r["inicio"] ?? "",
-        fim: r["fim"] ?? "",
-        duracaoHoras: hours(r["inicio"] ?? "0:00", r["fim"] ?? "0:00"),
-        readings: [],
-      };
-      byId.set(id, mission);
+  for (const file of files) {
+    const text = await readFile(path.join(CSV_DIR, file), "utf8");
+    const rows = parseCsv(text);
+    const fallbackId = file.replace(/\.csv$/i, "");
+
+    for (const r of rows) {
+      const id = r["mission_id"] || fallbackId;
+      if (!id) continue;
+      let mission = byId.get(id);
+      if (!mission) {
+        mission = {
+          id,
+          data: r["data"] ?? "",
+          local: r["local"] ?? "",
+          inicio: r["inicio"] ?? "",
+          fim: r["fim"] ?? "",
+          duracaoHoras: hours(r["inicio"] ?? "0:00", r["fim"] ?? "0:00"),
+          readings: [],
+        };
+        byId.set(id, mission);
+      }
+      mission.readings.push({
+        timestamp: r["timestamp"] ?? "",
+        lat: Number(r["lat"]),
+        lon: Number(r["lon"]),
+        ph: r["ph"] ?? "",
+        oxigenio_dissolvido: r["oxigenio_dissolvido"] ?? "",
+        temperatura: r["temperatura"] ?? "",
+        turbidez: r["turbidez"] ?? "",
+        salinidade: r["salinidade"] ?? "",
+        mono_p: r["mono_p"] ?? "",
+        multi_p: r["multi_p"] ?? "",
+        camera_r: r["camera_r"] ?? "",
+        camera_v: r["camera_v"] ?? "",
+      });
     }
-    mission.readings.push({
-      timestamp: r["timestamp"] ?? "",
-      lat: Number(r["lat"]),
-      lon: Number(r["lon"]),
-      ph: r["ph"] ?? "",
-      oxigenio_dissolvido: r["oxigenio_dissolvido"] ?? "",
-      temperatura: r["temperatura"] ?? "",
-      turbidez: r["turbidez"] ?? "",
-      salinidade: r["salinidade"] ?? "",
-      mono_p: r["mono_p"] ?? "",
-      multi_p: r["multi_p"] ?? "",
-      camera_r: r["camera_r"] ?? "",
-      camera_v: r["camera_v"] ?? "",
-    });
   }
+
+
 
   return [...byId.values()].sort((a, b) => (a.data < b.data ? 1 : -1));
 }
