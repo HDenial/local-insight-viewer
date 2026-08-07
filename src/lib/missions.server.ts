@@ -69,11 +69,17 @@ function hours(inicio: string, fim: string) {
 }
 
 export async function loadMissions(): Promise<Mission[]> {
-  const text = await readFile(path.join(CSV_DIR, CSV_FILE), "utf8");
-  const rows = parseCsv(text);
+  const files = (await readdir(CSV_DIR)).filter((f) => f.toLowerCase().endsWith(".csv")).sort();
   const byId = new Map<string, Mission>();
 
-  for (const r of rows) {
+  for (const file of files) {
+    const text = await readFile(path.join(CSV_DIR, file), "utf8");
+    const rows = parseCsv(text);
+    const fallbackId = file.replace(/\.csv$/i, "");
+
+    for (const r of rows) {
+      const id = r["mission_id"] || fallbackId;
+
     const id = r["mission_id"] ?? "";
     if (!id) continue;
     let mission = byId.get(id);
