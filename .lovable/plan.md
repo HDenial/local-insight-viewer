@@ -53,5 +53,5 @@ praia (outro ponto, fim)
 
 - Verificar visualmente as três missões no mapa em viewport desktop.
 - Confirmar zoom, pan e troca de missão.
-- Confirmar que cada scan é distinto, zigue-zague, fechado no mesmo ponto terrestre e não cruza terra entre início e fim.
+- Confirmar que cada scan é distinto, zigue-zague, começa e termina em pontos distintos da praia e não cruza terra entre início e fim.
 - Confirmar hover, fixação e soltura do cartão em pontos diferentes da rota.
