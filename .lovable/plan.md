@@ -38,7 +38,7 @@ praia (início/fim)
                                      │
         saída da área de scan ───────┘
        /
-praia (mesmo ponto)
+praia (outro ponto, fim)
 ```
 
 ## Detalhes técnicos
