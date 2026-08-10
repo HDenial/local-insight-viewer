@@ -104,3 +104,22 @@
 @utility track-glow {
   filter: drop-shadow(0 0 6px oklch(0.7 0.16 245 / 0.7));
 }
+
+/* Mapa dinâmico (Leaflet) integrado ao tema náutico escuro */
+.leaflet-container {
+  background: var(--color-panel-strong, #0b1626);
+  font-family: inherit;
+}
+.map-tiles {
+  filter: brightness(0.62) saturate(0.75) contrast(1.08) hue-rotate(-8deg);
+}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+  background: rgba(11, 22, 38, 0.75) !important;
+  color: var(--muted-foreground) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  font-size: 10px;
+}
+.leaflet-control-attribution a {
+  color: var(--primary) !important;
+}
