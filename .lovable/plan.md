@@ -7,7 +7,7 @@ Substituir a imagem estática por um mapa OpenStreetMap interativo e corrigir as
 1. comece em um ponto de lançamento na praia/terra;
 2. entre diretamente na água;
 3. execute uma varredura em zigue-zague distinta;
-4. saia da área de varredura e retorne ao mesmo ponto de lançamento;
+4. saia da área de varredura e retorne a outro ponto da praia, diferente do ponto de lançamento;
 5. tenha somente o primeiro e o último ponto fora da água.
 
 ## Implementação
@@ -38,7 +38,7 @@ praia (início/fim)
                                      │
         saída da área de scan ───────┘
        /
-praia (mesmo ponto)
+praia (outro ponto, fim)
 ```
 
 ## Detalhes técnicos
@@ -53,5 +53,5 @@ praia (mesmo ponto)
 
 - Verificar visualmente as três missões no mapa em viewport desktop.
 - Confirmar zoom, pan e troca de missão.
-- Confirmar que cada scan é distinto, zigue-zague, fechado no mesmo ponto terrestre e não cruza terra entre início e fim.
+- Confirmar que cada scan é distinto, zigue-zague, começa e termina em pontos distintos da praia e não cruza terra entre início e fim.
 - Confirmar hover, fixação e soltura do cartão em pontos diferentes da rota.
