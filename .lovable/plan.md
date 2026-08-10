@@ -7,7 +7,7 @@ Substituir a imagem estática por um mapa OpenStreetMap interativo e corrigir as
 1. comece em um ponto de lançamento na praia/terra;
 2. entre diretamente na água;
 3. execute uma varredura em zigue-zague distinta;
-4. saia da área de varredura e retorne ao mesmo ponto de lançamento;
+4. saia da área de varredura e retorne a outro ponto da praia, diferente do ponto de lançamento;
 5. tenha somente o primeiro e o último ponto fora da água.
 
 ## Implementação
