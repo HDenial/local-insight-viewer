@@ -108,7 +108,9 @@ export async function loadMissions(): Promise<Mission[]> {
         multi_p: r["multi_p"] ?? "",
         camera_r: r["camera_r"] ?? "",
         camera_v: r["camera_v"] ?? "",
+        frame: frameUrl(r["frame"] ?? ""),
       });
+
     }
   }
 
