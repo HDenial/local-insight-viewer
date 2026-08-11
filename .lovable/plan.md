@@ -21,7 +21,7 @@ A coluna `frame` aceita duas formas, detectadas automaticamente:
 - Nome de arquivo relativo (recomendado): `frames/OP-20260511/063000.jpg`, resolvido dentro da pasta de dados e servido pela aplicação em uma rota de imagens.
 - URL `http(s)://...`: usada diretamente.
 
-Quando `frame` estiver vazio ou o arquivo não existir, o card mostra um placeholder discreto ("sem frame") em vez da imagem fixa atual.
+Quando `frame` estiver vazio ou o arquivo não existir, o card continua mostrando a imagem fixa atual (para fins de teste). A lógica de placeholder ("sem frame") fica no código como bloco comentado, com indicação no README de onde encontrá-la para ativação futura.
 
 ## Workflow ROS2 (documentado no mesmo arquivo)
 
