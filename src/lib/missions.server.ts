@@ -70,6 +70,19 @@ function hours(inicio: string, fim: string) {
   return Math.max(0, (hf ?? 0) - (hi ?? 0));
 }
 
+/**
+ * Converte o valor da coluna `frame` em URL exibível.
+ * - URL http(s): usada como está.
+ * - Caminho relativo (ex.: frames/OP-20260511/063000.jpg): servido por /api/public/frames/.
+ */
+function frameUrl(value: string): string {
+  const v = value.trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  return "/api/public/frames/" + v.replace(/^\/+/, "").split("/").map(encodeURIComponent).join("/");
+}
+
+
 export async function loadMissions(): Promise<Mission[]> {
   const files = (await readdir(CSV_DIR)).filter((f) => f.toLowerCase().endsWith(".csv")).sort();
   const byId = new Map<string, Mission>();
