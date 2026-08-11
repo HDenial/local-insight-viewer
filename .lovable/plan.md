@@ -34,6 +34,11 @@ Um script utilitário `tools/ros2_to_csv.py` (executado fora da aplicação, no 
 
 O documento também descreve a alternativa manual: extrair frames de um bag (`ros2 bag`) e nomear os arquivos pelo timestamp.
 
+O script gera o CSV por completo (cabeçalho, metadados da missão e todas as linhas de leitura), com parâmetros de duração da captura e intervalo entre amostras (ex.: 2 h a cada 5 s), encerrando sozinho ao fim do tempo. Ele terá dois modos:
+
+- `--source ros2`: lê tópicos reais (GPS, sensores, câmera);
+- `--source sim` (padrão para testes): gera missão sintética completa — trajeto praia → varredura zigue-zague → praia, valores de sensores plausíveis e frames a partir da imagem de exemplo — para que a aplicação nunca dependa de dados reais.
+
 ## Detalhes técnicos
 
 - `src/lib/missions.server.ts`: ler a coluna `frame`; `src/lib/missions.functions.ts` e o tipo `Reading` ganham o campo.
