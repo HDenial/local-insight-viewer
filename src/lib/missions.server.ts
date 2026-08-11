@@ -15,6 +15,8 @@ export type Reading = {
   multi_p: string;
   camera_r: string;
   camera_v: string;
+  /** URL do frame capturado neste ponto ("" quando o CSV não informa). */
+  frame: string;
 };
 
 export type Mission = {
