@@ -37,15 +37,29 @@ export function ReadingCard({ reading, mission }: { reading: Reading; mission: M
       </dl>
       <div className="border-t border-border px-3 py-2">
         <p className="mb-2 text-muted-foreground">Imagem da câmera frontal</p>
+        {/*
+          Frame do ponto: usa reading.frame (coluna `frame` do CSV) quando existe.
+          Enquanto não há dados reais, cai na imagem de exemplo fixa.
+          PLACEHOLDER FUTURO — ao ligar os dados reais, troque o fallback abaixo por:
+
+          {!reading.frame ? (
+            <div className="grid h-32 w-full place-items-center rounded-md border border-border text-muted-foreground">
+              sem frame
+            </div>
+          ) : (
+            <img src={reading.frame} ... />
+          )}
+        */}
         <img
-          src={cameraImg}
-          alt="Imagem da câmera frontal do barco autônomo"
+          src={reading.frame || cameraImg}
+          alt={`Frame da câmera frontal em ${reading.timestamp || mission.data}`}
           loading="lazy"
           width={768}
           height={512}
           className="w-full rounded-md border border-border object-cover"
         />
       </div>
+
     </div>
   );
 }

@@ -12,6 +12,28 @@ Continue developing this project in the [Lovable editor](https://lovable.dev/pro
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.
 - **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
+## Dados (CSV)
+
+Os dados exibidos vêm de arquivos `.csv` na pasta `data/` (um por operação).
+O formato completo das colunas está em [`docs/FORMATO-CSV.md`](docs/FORMATO-CSV.md).
+
+Para gerar um CSV completo (simulado ou a partir de tópicos ROS2):
+
+```sh
+python tools/ros2_to_csv.py --mission-id OP-20260601 --duracao 5h --intervalo 60s
+```
+
+### Frames da câmera
+
+Cada linha do CSV pode apontar, na coluna `frame`, o frame capturado naquele instante
+(`frames/<mission_id>/<HHMMSS>.jpg` ou uma URL). Os arquivos são servidos por
+`src/routes/api/public/frames/$.ts`.
+
+Enquanto não há frames reais, um `frame` vazio faz o card exibir a imagem de exemplo fixa.
+A lógica definitiva de placeholder ("sem frame") está **comentada** em
+`src/components/tracker/ReadingCard.tsx`, no bloco da imagem — basta descomentá-la quando
+os frames reais estiverem disponíveis.
+
 ## Development
 
 Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
@@ -22,3 +44,4 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
