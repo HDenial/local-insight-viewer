@@ -83,12 +83,37 @@ function frameUrl(value: string): string {
 }
 
 
+/**
+ * CSVs embutidos no bundle em tempo de build (o servidor de produção não tem
+ * acesso ao sistema de arquivos do projeto).
+ */
+const BUNDLED_CSVS = import.meta.glob("../../data/*.csv", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+/** Lê os CSVs do disco (dev/local) e cai para os arquivos embutidos no bundle. */
+async function readCsvFiles(): Promise<{ name: string; text: string }[]> {
+  try {
+    const files = (await readdir(CSV_DIR)).filter((f) => f.toLowerCase().endsWith(".csv")).sort();
+    if (files.length) {
+      return Promise.all(
+        files.map(async (name) => ({ name, text: await readFile(path.join(CSV_DIR, name), "utf8") })),
+      );
+    }
+  } catch {
+    // sem filesystem (produção) — usa os CSVs embutidos
+  }
+  return Object.entries(BUNDLED_CSVS)
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+    .map(([p, text]) => ({ name: p.split("/").pop() ?? p, text }));
+}
+
 export async function loadMissions(): Promise<Mission[]> {
-  const files = (await readdir(CSV_DIR)).filter((f) => f.toLowerCase().endsWith(".csv")).sort();
   const byId = new Map<string, Mission>();
 
-  for (const file of files) {
-    const text = await readFile(path.join(CSV_DIR, file), "utf8");
+  for (const { name: file, text } of await readCsvFiles()) {
     const rows = parseCsv(text);
     const fallbackId = file.replace(/\.csv$/i, "");
 
