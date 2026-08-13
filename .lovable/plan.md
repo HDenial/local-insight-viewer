@@ -7,7 +7,7 @@ Substituir o ícone estático por uma rosa dos ventos desenhada em SVG:
 - Círculo com marcações dos pontos cardeais (N, S, L, O) e agulha N/S em duas cores (norte destacado).
 - A agulha aponta sempre para o norte do mapa (mapa é north-up), acompanhando qualquer rotação futura.
 - Mantém o estilo atual: mesmo tamanho, borda, fundo translúcido com blur e tokens de cor do tema.
-- Clicar na bússola continua com o comportamento atual do botão: reenquadrar (fit) o trajeto da missão no mapa.
+- Hoje o botão é só visual; clicar na bússola passa a reenquadrar (fit) o trajeto da missão no mapa.
 
 ## 2. Card "Dados nesta posição" sempre dentro do canvas
 
