@@ -35,6 +35,7 @@ export default function MissionMap({ mission, pinned, onHover, onPin, onMove, on
       className: "map-tiles",
     }).addTo(map);
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(map);
+    map.on("click", () => cb.current.onClearPin());
     mapRef.current = map;
     layerRef.current = L.layerGroup().addTo(map);
     cb.current.onReady({
