@@ -11,10 +11,47 @@ const MissionMap = lazy(() => import("./MissionMap"));
 const MARGIN = 12;
 const GAP = 14;
 
-/** Rosa dos ventos: agulha aponta para o norte do mapa (north-up). */
+/** Rosa dos ventos: agulha azul aponta para o norte (N) do mapa (north-up). */
 function CompassRose({ bearing }: { bearing: number }) {
   return (
     <svg viewBox="0 0 48 48" className="h-7 w-7" aria-hidden="true">
+      {/* anéis e marcações fixos */}
+      <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5" />
+      <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1" />
+      {[0, 90, 180, 270].map((a) => (
+        <line
+          key={`maj${a}`}
+          x1="24"
+          y1="5"
+          x2="24"
+          y2="9"
+          stroke="currentColor"
+          strokeOpacity="0.55"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          transform={`rotate(${a} 24 24)`}
+        />
+      ))}
+      {[45, 135, 225, 315].map((a) => (
+        <line
+          key={`min${a}`}
+          x1="24"
+          y1="6"
+          x2="24"
+          y2="8.5"
+          stroke="currentColor"
+          strokeOpacity="0.3"
+          strokeWidth="1"
+          strokeLinecap="round"
+          transform={`rotate(${a} 24 24)`}
+        />
+      ))}
+      {/* direções cardinais fixas: N em destaque */}
+      <text x="24" y="4.2" textAnchor="middle" dominantBaseline="hanging" fontSize="6" fontWeight="700" className="fill-primary">N</text>
+      <text x="24" y="46" textAnchor="middle" dominantBaseline="auto" fontSize="5" fill="currentColor" fillOpacity="0.7">S</text>
+      <text x="45.5" y="24" textAnchor="middle" dominantBaseline="central" fontSize="5" fill="currentColor" fillOpacity="0.7">L</text>
+      <text x="2.5" y="24" textAnchor="middle" dominantBaseline="central" fontSize="5" fill="currentColor" fillOpacity="0.7">O</text>
+      {/* agulha: ponta azul (norte) para cima, ponta sul apagada */}
       <g
         style={{
           transform: `rotate(${-bearing}deg)`,
@@ -22,39 +59,8 @@ function CompassRose({ bearing }: { bearing: number }) {
           transition: "transform 500ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5" />
-        <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1" />
-        {[0, 90, 180, 270].map((a) => (
-          <line
-            key={a}
-            x1="24"
-            y1="5"
-            x2="24"
-            y2="9"
-            stroke="currentColor"
-            strokeOpacity="0.55"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            transform={`rotate(${a} 24 24)`}
-          />
-        ))}
-        {[45, 135, 225, 315].map((a) => (
-          <line
-            key={a}
-            x1="24"
-            y1="6"
-            x2="24"
-            y2="8.5"
-            stroke="currentColor"
-            strokeOpacity="0.3"
-            strokeWidth="1"
-            strokeLinecap="round"
-            transform={`rotate(${a} 24 24)`}
-          />
-        ))}
-        {/* agulha: metade norte destacada, metade sul apagada */}
-        <polygon points="24,10 28,25 24,22 20,25" className="fill-primary" />
-        <polygon points="24,38 20,23 24,26 28,23" fill="currentColor" fillOpacity="0.45" />
+        <polygon points="24,9 28,25 24,21 20,25" className="fill-primary" />
+        <polygon points="24,39 20,23 24,27 28,23" fill="currentColor" fillOpacity="0.45" />
         <circle cx="24" cy="24" r="2" fill="currentColor" fillOpacity="0.85" />
       </g>
     </svg>
