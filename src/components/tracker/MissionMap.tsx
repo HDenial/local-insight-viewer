@@ -17,14 +17,14 @@ type Props = {
 };
 
 /** Mapa dinâmico (OpenStreetMap/Leaflet). Carregado apenas no navegador. */
-export default function MissionMap({ mission, pinned, onHover, onPin, onMove, onReady }: Props) {
+export default function MissionMap({ mission, pinned, onHover, onPin, onMove, onReady, onClearPin }: Props) {
   const el = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
   const markersRef = useRef<L.CircleMarker[]>([]);
   const boundsRef = useRef<L.LatLngBounds | null>(null);
-  const cb = useRef({ onHover, onPin, onMove, onReady });
-  cb.current = { onHover, onPin, onMove, onReady };
+  const cb = useRef({ onHover, onPin, onMove, onReady, onClearPin });
+  cb.current = { onHover, onPin, onMove, onReady, onClearPin };
 
   useEffect(() => {
     if (!el.current || mapRef.current) return;
