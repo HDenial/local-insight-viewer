@@ -13,6 +13,7 @@ type Props = {
   onPin: (index: number) => void;
   onMove: (p: ActivePoint) => void;
   onReady: (api: MapApi) => void;
+  onClearPin: () => void;
 };
 
 /** Mapa dinâmico (OpenStreetMap/Leaflet). Carregado apenas no navegador. */
