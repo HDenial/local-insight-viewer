@@ -14,7 +14,7 @@ const GAP = 14;
 /** Rosa dos ventos: agulha azul aponta para o norte (N) do mapa (north-up). */
 function CompassRose({ bearing }: { bearing: number }) {
   return (
-    <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden="true">
+    <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden="true">
       {/* anéis e marcações fixos */}
       <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5" />
       <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1" />
