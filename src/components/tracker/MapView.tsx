@@ -14,7 +14,7 @@ const GAP = 14;
 /** Rosa dos ventos: agulha azul aponta para o norte (N) do mapa (north-up). */
 function CompassRose({ bearing }: { bearing: number }) {
   return (
-    <svg viewBox="0 0 48 48" className="h-7 w-7" aria-hidden="true">
+    <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden="true">
       {/* anéis e marcações fixos */}
       <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5" />
       <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1" />
@@ -47,10 +47,10 @@ function CompassRose({ bearing }: { bearing: number }) {
         />
       ))}
       {/* direções cardinais fixas: N em destaque */}
-      <text x="24" y="4.2" textAnchor="middle" dominantBaseline="hanging" fontSize="6" fontWeight="700" className="fill-primary">N</text>
-      <text x="24" y="46" textAnchor="middle" dominantBaseline="auto" fontSize="5" fill="currentColor" fillOpacity="0.7">S</text>
-      <text x="45.5" y="24" textAnchor="middle" dominantBaseline="central" fontSize="5" fill="currentColor" fillOpacity="0.7">L</text>
-      <text x="2.5" y="24" textAnchor="middle" dominantBaseline="central" fontSize="5" fill="currentColor" fillOpacity="0.7">O</text>
+      <text x="24" y="3" textAnchor="middle" dominantBaseline="hanging" fontSize="9" fontWeight="700" className="fill-primary">N</text>
+      <text x="24" y="47.5" textAnchor="middle" dominantBaseline="auto" fontSize="8" fontWeight="600" fill="currentColor" fillOpacity="0.85">S</text>
+      <text x="44.5" y="24.5" textAnchor="middle" dominantBaseline="central" fontSize="8" fontWeight="600" fill="currentColor" fillOpacity="0.85">L</text>
+      <text x="3.5" y="24.5" textAnchor="middle" dominantBaseline="central" fontSize="8" fontWeight="600" fill="currentColor" fillOpacity="0.85">O</text>
       {/* agulha: ponta azul (norte) para cima, ponta sul apagada */}
       <g
         style={{
