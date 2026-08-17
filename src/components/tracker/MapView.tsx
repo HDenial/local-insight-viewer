@@ -148,7 +148,7 @@ export function MapView({ mission }: { mission: Mission }) {
           setBearing(0);
           api.current?.fit();
         }}
-        className="absolute right-5 top-5 z-[500] grid h-11 w-11 place-items-center rounded-full border border-border bg-panel-strong/85 text-foreground backdrop-blur"
+        className="absolute right-5 top-5 z-[500] grid h-14 w-14 place-items-center rounded-full border border-border bg-panel-strong/85 text-foreground backdrop-blur"
       >
         <CompassRose bearing={bearing} />
       </button>
