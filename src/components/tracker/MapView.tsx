@@ -59,8 +59,8 @@ function CompassRose({ bearing }: { bearing: number }) {
           transition: "transform 500ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        <polygon points="24,9 28,25 24,21 20,25" className="fill-primary" />
-        <polygon points="24,39 20,23 24,27 28,23" fill="currentColor" fillOpacity="0.45" />
+        <polygon points="24,13 28,25 24,21 20,25" className="fill-primary" />
+        <polygon points="24,35 20,23 24,27 28,23" fill="currentColor" fillOpacity="0.45" />
         <circle cx="24" cy="24" r="2" fill="currentColor" fillOpacity="0.85" />
       </g>
     </svg>
