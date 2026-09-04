@@ -25,14 +25,11 @@ python tools/ros2_to_csv.py --mission-id OP-20260601 --duracao 5h --intervalo 60
 
 ### Frames da câmera
 
-Cada linha do CSV pode apontar, na coluna `frame`, o frame capturado naquele instante
-(`frames/<mission_id>/<HHMMSS>.jpg` ou uma URL). Os arquivos são servidos por
-`src/routes/api/public/frames/$.ts`.
-
-Enquanto não há frames reais, um `frame` vazio faz o card exibir a imagem de exemplo fixa.
-A lógica definitiva de placeholder ("sem frame") está **comentada** em
-`src/components/tracker/ReadingCard.tsx`, no bloco da imagem — basta descomentá-la quando
-os frames reais estiverem disponíveis.
+Cada linha do CSV pode apontar para imagens de vante e de ré nas colunas `frame_v` e
+`frame_r` (`frames/<mission_id>/<HHMMSS>.jpg` ou uma URL). A coluna antiga `frame`
+continua aceita como imagem de vante. Os arquivos são servidos por
+`src/routes/api/public/frames/$.ts`. Quando uma imagem não existe, o cartão sinaliza a
+câmera como `OFF` e exibe um placeholder.
 
 ## Development
 
@@ -45,4 +42,3 @@ npm i
 npm run dev
 cloudflared tunnel --url http://localhost:8080
 ```
-

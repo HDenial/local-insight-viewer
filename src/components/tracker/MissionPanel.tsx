@@ -1,18 +1,24 @@
 import { Check, ChevronRight, SlidersHorizontal, User, CalendarDays } from "lucide-react";
-import type { Mission } from "@/lib/missions.functions";
+import type { Mission, Reading } from "@/lib/missions.functions";
 import { formatData } from "@/lib/format";
 
 const coletas = [
-  { label: "PH", tone: "text-ok" },
-  { label: "Oxigênio Dissolvido", tone: "text-ok" },
-  { label: "Temperatura", tone: "text-foreground" },
-  { label: "Turbidez", tone: "text-info" },
-  { label: "Salinidade", tone: "text-info" },
-  { label: "Mono P", tone: "text-info" },
-  { label: "Multi P", tone: "text-alert" },
-  { label: "Camera V", tone: "text-ok" },
-  { label: "Camera R", tone: "text-alert" },
-];
+  { key: "ph", label: "PH" },
+  { key: "oxigenio_dissolvido", label: "Oxigênio Dissolvido" },
+  { key: "temperatura", label: "Temperatura" },
+  { key: "turbidez", label: "Turbidez" },
+  { key: "salinidade", label: "Salinidade" },
+  { key: "mono_p", label: "Mono P" },
+  { key: "multi_p", label: "Multi P" },
+  { key: "camera_v", label: "Camera V" },
+  { key: "camera_r", label: "Camera R" },
+] satisfies { key: keyof Reading; label: string }[];
+
+function hasCollectedData(mission: Mission, key: keyof Reading) {
+  if (key === "camera_v") return mission.readings.some((reading) => reading.frame_v !== "");
+  if (key === "camera_r") return mission.readings.some((reading) => reading.frame_r !== "");
+  return mission.readings.some((reading) => String(reading[key] ?? "").trim() !== "");
+}
 
 export function MissionPanel({
   missions,
@@ -41,7 +47,11 @@ export function MissionPanel({
             <p className="truncate text-xs text-muted-foreground">Nome do Usuário</p>
           </div>
         </div>
-        <button type="button" aria-label="Filtrar missões" className="text-muted-foreground hover:text-foreground">
+        <button
+          type="button"
+          aria-label="Filtrar missões"
+          className="text-muted-foreground hover:text-foreground"
+        >
           <SlidersHorizontal className="h-5 w-5" />
         </button>
       </div>
@@ -62,8 +72,11 @@ export function MissionPanel({
             >
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                 <div className="min-w-0 space-y-1.5">
-                  <p className={`font-display text-lg font-semibold ${isActive ? "text-primary" : ""}`}>
-                    Operação: <span className="font-sans text-base font-medium">{formatData(m.data)}</span>
+                  <p
+                    className={`font-display text-lg font-semibold ${isActive ? "text-primary" : ""}`}
+                  >
+                    Operação:{" "}
+                    <span className="font-sans text-base font-medium">{formatData(m.data)}</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Local: <span className="text-foreground/90">{m.local}</span>
@@ -76,12 +89,19 @@ export function MissionPanel({
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Coletas:{" "}
-                    {coletas.map((c, i) => (
-                      <span key={c.label} className={c.tone}>
-                        {c.label}
-                        {i < coletas.length - 1 ? ", " : ""}
-                      </span>
-                    ))}
+                    {coletas.map((c, i) => {
+                      const available = hasCollectedData(m, c.key);
+                      return (
+                        <span
+                          key={c.key}
+                          className={available ? "text-ok" : "text-alert"}
+                          title={available ? "Dados disponíveis" : "Sem dados nesta operação"}
+                        >
+                          {c.label}
+                          {i < coletas.length - 1 ? ", " : ""}
+                        </span>
+                      );
+                    })}
                   </p>
                 </div>
                 <span className="mt-1 shrink-0 text-muted-foreground">
