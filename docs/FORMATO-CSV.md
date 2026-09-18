@@ -143,3 +143,6 @@ O rangefinder pode ser incluído na coluna `mono_p`:
 ```bash
   --topic-sensor mono_p /mavros/rangefinder/rangefinder
 ```
+#### Iniciar Túnel
+
+cloudflared tunnel --url http://localhost:8080
