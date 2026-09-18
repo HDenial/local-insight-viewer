@@ -25,36 +25,39 @@ ser lido pela aplicação.
 
 ### Metadados da missão (repetidos em todas as linhas do arquivo)
 
-| Coluna       | Obrigatória | Formato / exemplo                        |
-| ------------ | ----------- | ---------------------------------------- |
-| `mission_id` | sim         | `OP-20260511` (agrupa as linhas)         |
-| `data`       | sim         | `2026-05-11` (AAAA-MM-DD)                |
-| `local`      | sim         | `"Enseada de Jurujuba, Niterói/RJ"`      |
-| `inicio`     | sim         | `6:30` (HH:MM, 24h)                      |
-| `fim`        | sim         | `11:30` (usada para calcular a duração)  |
+| Coluna       | Obrigatória | Formato / exemplo                       |
+| ------------ | ----------- | --------------------------------------- |
+| `mission_id` | sim         | `OP-20260511` (agrupa as linhas)        |
+| `data`       | sim         | `2026-05-11` (AAAA-MM-DD)               |
+| `local`      | sim         | `"Enseada de Jurujuba, Niterói/RJ"`     |
+| `inicio`     | sim         | `6:30` (HH:MM, 24h)                     |
+| `fim`        | sim         | `11:30` (usada para calcular a duração) |
 
 ### Leitura (uma por linha)
 
-| Coluna                | Formato / exemplo               | Observação                          |
-| --------------------- | ------------------------------- | ----------------------------------- |
-| `timestamp`           | `2026-05-11 06:30:00`           | instante da coleta                  |
-| `lat`                 | `-22.926686`                    | graus decimais, ponto como separador|
-| `lon`                 | `-43.119029`                    | graus decimais                      |
-| `ph`                  | `7.39`                          | texto exibido como está             |
-| `oxigenio_dissolvido` | `4.87`                          | mg/L                                |
-| `temperatura`         | `24.6`                          | °C                                  |
-| `turbidez`            | `3.7`                           | NTU                                 |
-| `salinidade`          | `29.1`                          | PSU                                 |
-| `mono_p`              | `26`                            | m                                   |
-| `multi_p`             | `12` ou vazio                   | vazio vira `—`                      |
-| `camera_r`            | `OK` / `ALERTA`                 | texto livre                         |
-| `camera_v`            | `OK` / `ALERTA`                 | texto livre                         |
-| `frame`               | ver abaixo                      | imagem daquele instante             |
+| Coluna                | Formato / exemplo     | Observação                            |
+| --------------------- | --------------------- | ------------------------------------- |
+| `timestamp`           | `2026-05-11 06:30:00` | instante da coleta                    |
+| `lat`                 | `-22.926686`          | graus decimais, ponto como separador  |
+| `lon`                 | `-43.119029`          | graus decimais                        |
+| `ph`                  | `7.39`                | texto exibido como está               |
+| `oxigenio_dissolvido` | `4.87`                | mg/L                                  |
+| `temperatura`         | `24.6`                | °C                                    |
+| `turbidez`            | `3.7`                 | NTU                                   |
+| `salinidade`          | `29.1`                | PSU                                   |
+| `mono_p`              | `26`                  | m                                     |
+| `multi_p`             | `12` ou vazio         | vazio vira `—`                        |
+| `camera_r`            | `OK` / `ALERTA`       | texto livre                           |
+| `camera_v`            | `OK` / `ALERTA`       | texto livre                           |
+| `frame_v`             | ver abaixo            | imagem da câmera de vante             |
+| `frame_r`             | ver abaixo            | imagem da câmera de ré                |
+| `frame`               | ver abaixo            | compatibilidade: equivale a `frame_v` |
 
-## Coluna `frame`
+## Colunas de imagem
 
-Referência do frame capturado pela câmera **no mesmo instante da leitura**. Aceita duas formas,
-detectadas automaticamente:
+`frame_v` e `frame_r` referenciam as imagens de vante e de ré capturadas **no mesmo
+instante da leitura**. A coluna antiga `frame` continua aceita como imagem de vante.
+Cada coluna aceita duas formas, detectadas automaticamente:
 
 1. **Caminho relativo à pasta de dados** (recomendado):
    `frames/OP-20260511/063000.jpg` — a aplicação serve o arquivo em
@@ -62,10 +65,8 @@ detectadas automaticamente:
    Extensões aceitas: `.jpg`, `.jpeg`, `.png`, `.webp`.
 2. **URL completa**: `https://exemplo.com/frames/063000.jpg` — usada diretamente.
 
-Se `frame` estiver vazio (ou o arquivo não existir), o card mostra hoje a **imagem de
-exemplo fixa**, para permitir testes sem dados reais. A lógica definitiva de placeholder
-("sem frame") está comentada em `src/components/tracker/ReadingCard.tsx`, no bloco da
-imagem — basta descomentar quando os frames reais estiverem disponíveis.
+Se a coluna estiver vazia, o cartão sinaliza a respectiva câmera como `OFF` e mostra um
+placeholder. Quando há uma imagem, a câmera aparece como `ON`.
 
 ## Exemplo mínimo
 
@@ -120,3 +121,28 @@ python tools/ros2_to_csv.py --source ros2 ...   # em outro
 
 Ou extrair os frames do bag manualmente, nomeá-los pelo horário (`HHMMSS.jpg`), colocá-los
 em `data/frames/<mission_id>/` e preencher a coluna `frame` com esses caminhos.
+
+### Bags do gravador MAVROS
+
+Para as gravações feitas por `rosbag.py` (`GPSRAW` e imagens `bgr8`), use:
+
+```bash
+python3 tools/mavros_db3_to_csv.py \
+  --db3-path data/bags/teste1 \
+  --mission-id OP-20260416 \
+  --intervalo 5s
+```
+
+O conversor aplica automaticamente o significado dos nomes usados pelo gravador:
+
+- `/mavros/camera/b/raw` (`back`) → `frame_r`, câmera de ré;
+- `/mavros/camera/f/raw` (`front`) → `frame_v`, câmera de vante.
+
+O rangefinder pode ser incluído na coluna `mono_p`:
+
+```bash
+  --topic-sensor mono_p /mavros/rangefinder/rangefinder
+```
+#### Iniciar Túnel
+
+cloudflared tunnel --url http://localhost:8080

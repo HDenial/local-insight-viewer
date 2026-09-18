@@ -3,6 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getMissions } from "@/lib/missions.functions";
 import { Sidebar } from "@/components/tracker/Sidebar";
+import { BathymetryView } from "@/components/tracker/BathymetryView";
 import { MapView } from "@/components/tracker/MapView";
 import { MissionPanel } from "@/components/tracker/MissionPanel";
 
@@ -23,7 +24,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Boat Tracker — Monitoramento de Missões Náuticas" },
       {
         property: "og:description",
-        content: "Acompanhe trajetos, sensores e câmeras das missões de coleta em tempo quase real.",
+        content:
+          "Acompanhe trajetos, sensores e câmeras das missões de coleta em tempo quase real.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -46,6 +48,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { data: missions } = useSuspenseQuery(missionsQuery);
+  const [section, setSection] = useState(1);
   const [selectedId, setSelectedId] = useState(missions[0]?.id ?? "");
   const selected = missions.find((m) => m.id === selectedId) ?? missions[0];
 
@@ -55,8 +58,12 @@ function Index() {
 
   return (
     <main className="flex h-screen w-full overflow-hidden bg-background">
-      <Sidebar />
-      <MapView mission={selected} />
+      <Sidebar active={section} onSelect={setSection} />
+      {section === 2 ? (
+        <BathymetryView key={selected.id} mission={selected} />
+      ) : (
+        <MapView key={selected.id} mission={selected} />
+      )}
       <MissionPanel missions={missions} selectedId={selected.id} onSelect={setSelectedId} />
     </main>
   );

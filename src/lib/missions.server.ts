@@ -1,7 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-
 export type Reading = {
   timestamp: string;
   lat: number;
@@ -15,8 +14,11 @@ export type Reading = {
   multi_p: string;
   camera_r: string;
   camera_v: string;
-  /** URL do frame capturado neste ponto ("" quando o CSV não informa). */
+  /** Compatibilidade com CSVs antigos: equivale a frame_v. */
   frame: string;
+  /** Imagens das câmeras de vante e de ré neste ponto. */
+  frame_v: string;
+  frame_r: string;
 };
 
 export type Mission = {
@@ -31,7 +33,6 @@ export type Mission = {
 
 /** Pasta local onde os CSVs de leitura ficam (um arquivo por missão). Configurável via CSV_DIR. */
 const CSV_DIR = process.env["CSV_DIR"] ?? path.join(process.cwd(), "data");
-
 
 function splitLine(line: string): string[] {
   const out: string[] = [];
@@ -82,7 +83,6 @@ function frameUrl(value: string): string {
   return "/api/public/frames/" + v.replace(/^\/+/, "").split("/").map(encodeURIComponent).join("/");
 }
 
-
 /**
  * CSVs embutidos no bundle em tempo de build (o servidor de produção não tem
  * acesso ao sistema de arquivos do projeto).
@@ -99,7 +99,10 @@ async function readCsvFiles(): Promise<{ name: string; text: string }[]> {
     const files = (await readdir(CSV_DIR)).filter((f) => f.toLowerCase().endsWith(".csv")).sort();
     if (files.length) {
       return Promise.all(
-        files.map(async (name) => ({ name, text: await readFile(path.join(CSV_DIR, name), "utf8") })),
+        files.map(async (name) => ({
+          name,
+          text: await readFile(path.join(CSV_DIR, name), "utf8"),
+        })),
       );
     }
   } catch {
@@ -133,6 +136,7 @@ export async function loadMissions(): Promise<Mission[]> {
         };
         byId.set(id, mission);
       }
+      const legacyFrame = frameUrl(r["frame"] ?? "");
       mission.readings.push({
         timestamp: r["timestamp"] ?? "",
         lat: Number(r["lat"]),
@@ -146,13 +150,12 @@ export async function loadMissions(): Promise<Mission[]> {
         multi_p: r["multi_p"] ?? "",
         camera_r: r["camera_r"] ?? "",
         camera_v: r["camera_v"] ?? "",
-        frame: frameUrl(r["frame"] ?? ""),
+        frame: legacyFrame,
+        frame_v: frameUrl(r["frame_v"] ?? "") || legacyFrame,
+        frame_r: frameUrl(r["frame_r"] ?? ""),
       });
-
     }
   }
-
-
 
   return [...byId.values()].sort((a, b) => (a.data < b.data ? 1 : -1));
 }

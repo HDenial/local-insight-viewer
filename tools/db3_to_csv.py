@@ -11,8 +11,8 @@ import csv
 from datetime import datetime
 from pathlib import Path
 
-from rosbags.rosbag2 import Reader
-from rosbags.serde import deserialize_cdr
+from rosbags.highlevel import AnyReader
+from rosbags.typesys import Stores, get_typestore
 
 COLUMNS = [
     "mission_id", "data", "local", "inicio", "fim",
@@ -28,7 +28,13 @@ def parse_dur(s: str) -> int:
     mult = {"s": 1, "m": 60, "h": 3600}.get(s[-1:], 1)
     if s[-1:] in "smh":
         s = s[:-1]
-    return int(float(s) * mult)
+    try:
+        seconds = int(float(s) * mult)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"duração inválida: {s!r}") from exc
+    if seconds <= 0:
+        raise argparse.ArgumentTypeError("a duração deve ser maior que zero")
+    return seconds
 
 
 def main() -> None:
@@ -59,14 +65,26 @@ def main() -> None:
     rows: list[dict[str, str]] = []
     last_sample_time: datetime | None = None
 
-    # Leitura do DB3
-    with Reader(args.db3_path) as reader:
+    if not args.db3_path.exists():
+        p.error(f"arquivo ou diretório não encontrado: {args.db3_path}")
+
+    # AnyReader carrega as definições de mensagens gravadas no bag. O
+    # typestore padrão cobre bags ROS 2 que não contêm essas definições.
+    typestore = get_typestore(Stores.LATEST)
+    with AnyReader([args.db3_path], default_typestore=typestore) as reader:
         # Filtra apenas os tópicos que interessam
         target_topics = {args.topic_gps, args.topic_image}.union(sensor_map.keys())
         connections = [c for c in reader.connections if c.topic in target_topics]
 
+        if not connections:
+            available = ", ".join(sorted({c.topic for c in reader.connections})) or "nenhum"
+            raise SystemExit(
+                "Nenhum dos tópicos solicitados existe no bag. "
+                f"Tópicos disponíveis: {available}"
+            )
+
         for connection, timestamp_ns, rawdata in reader.messages(connections=connections):
-            msg = deserialize_cdr(rawdata, connection.msgtype)
+            msg = reader.deserialize(rawdata, connection.msgtype)
             msg_dt = datetime.fromtimestamp(timestamp_ns / 1e9)
 
             # Atualiza estado com base no tópico
@@ -79,8 +97,9 @@ def main() -> None:
                 col = sensor_map[connection.topic]
                 current_sensors[col] = float(msg.data)
 
-            # Amostragem temporal orientada pelo intervalo
-            if current_gps is not None:
+            # Usa a chegada de um novo fix como gatilho. Assim, uma imagem ou
+            # leitura de sensor não gera uma linha com coordenadas antigas.
+            if connection.topic == args.topic_gps and current_gps is not None:
                 if last_sample_time is None or (msg_dt - last_sample_time).total_seconds() >= args.intervalo:
                     last_sample_time = msg_dt
                     

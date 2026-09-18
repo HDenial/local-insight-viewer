@@ -1,5 +1,5 @@
 import { Calendar, MapPin, Plus, Minus, Crosshair } from "lucide-react";
-import { Suspense, lazy, useLayoutEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import type { Mission } from "@/lib/missions.functions";
 import type { ActivePoint, MapApi } from "./MissionMap";
@@ -15,42 +15,83 @@ const GAP = 14;
 function CompassRose({ bearing }: { bearing: number }) {
   return (
     <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden="true">
-      {/* anéis e marcações fixos */}
-      <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5" />
-      <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1" />
-      {[0, 90, 180, 270].map((a) => (
+      {/* anel azul reservado exclusivamente às direções cardinais */}
+      <circle cx="24" cy="24" r="22" className="fill-primary" />
+      <circle cx="24" cy="24" r="13" className="fill-panel-strong stroke-primary-foreground/30" />
+      {/* marcações na borda interna do anel azul */}
+      {[0, 90, 180, 270].map((angle) => (
         <line
-          key={`maj${a}`}
+          key={`major-${angle}`}
           x1="24"
-          y1="5"
+          y1="10.5"
           x2="24"
-          y2="9"
+          y2="13.5"
           stroke="currentColor"
-          strokeOpacity="0.55"
           strokeWidth="1.5"
           strokeLinecap="round"
-          transform={`rotate(${a} 24 24)`}
+          className="text-primary-foreground"
+          transform={`rotate(${angle} 24 24)`}
         />
       ))}
-      {[45, 135, 225, 315].map((a) => (
+      {[45, 135, 225, 315].map((angle) => (
         <line
-          key={`min${a}`}
+          key={`minor-${angle}`}
           x1="24"
-          y1="6"
+          y1="11"
           x2="24"
-          y2="8.5"
+          y2="13"
           stroke="currentColor"
-          strokeOpacity="0.3"
           strokeWidth="1"
           strokeLinecap="round"
-          transform={`rotate(${a} 24 24)`}
+          className="text-primary-foreground/70"
+          transform={`rotate(${angle} 24 24)`}
         />
       ))}
-      {/* direções cardinais fixas: N em destaque */}
-      <text x="24" y="3" textAnchor="middle" dominantBaseline="hanging" fontSize="9" fontWeight="700" className="fill-primary">N</text>
-      <text x="24" y="47.5" textAnchor="middle" dominantBaseline="auto" fontSize="8" fontWeight="600" fill="currentColor" fillOpacity="0.85">S</text>
-      <text x="44.5" y="24.5" textAnchor="middle" dominantBaseline="central" fontSize="8" fontWeight="600" fill="currentColor" fillOpacity="0.85">L</text>
-      <text x="3.5" y="24.5" textAnchor="middle" dominantBaseline="central" fontSize="8" fontWeight="600" fill="currentColor" fillOpacity="0.85">O</text>
+      {/* letras na borda externa; sem sobreposição com as marcações */}
+      <text
+        x="24"
+        y="5.5"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="7"
+        fontWeight="700"
+        className="fill-primary-foreground"
+      >
+        N
+      </text>
+      <text
+        x="24"
+        y="42.5"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="7"
+        fontWeight="700"
+        className="fill-primary-foreground"
+      >
+        S
+      </text>
+      <text
+        x="42.5"
+        y="24"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="7"
+        fontWeight="700"
+        className="fill-primary-foreground"
+      >
+        L
+      </text>
+      <text
+        x="5.5"
+        y="24"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="7"
+        fontWeight="700"
+        className="fill-primary-foreground"
+      >
+        O
+      </text>
       {/* agulha: ponta azul (norte) para cima, ponta sul apagada */}
       <g
         style={{
@@ -60,8 +101,8 @@ function CompassRose({ bearing }: { bearing: number }) {
         }}
       >
         <polygon points="24,13 28,25 24,21 20,25" className="fill-primary" />
-        <polygon points="24,35 20,23 24,27 28,23" fill="currentColor" fillOpacity="0.45" />
-        <circle cx="24" cy="24" r="2" fill="currentColor" fillOpacity="0.85" />
+        <polygon points="24,35 20,23 24,27 28,23" className="fill-muted-foreground" />
+        <circle cx="24" cy="24" r="2" className="fill-foreground" />
       </g>
     </svg>
   );
@@ -74,10 +115,32 @@ export function MapView({ mission }: { mission: Mission }) {
   const api = useRef<MapApi | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const hoverClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
 
   const active = pinnedPoint ?? hovered;
   const reading = active ? mission.readings[active.index] : null;
+
+  const cancelHoverClear = () => {
+    if (hoverClearTimer.current) clearTimeout(hoverClearTimer.current);
+    hoverClearTimer.current = null;
+  };
+
+  const handleHover = (point: ActivePoint) => {
+    cancelHoverClear();
+    if (point) {
+      setHovered(point);
+      return;
+    }
+    hoverClearTimer.current = setTimeout(() => setHovered(null), 180);
+  };
+
+  useEffect(
+    () => () => {
+      if (hoverClearTimer.current) clearTimeout(hoverClearTimer.current);
+    },
+    [],
+  );
 
   useLayoutEffect(() => {
     if (!active || !reading) {
@@ -108,7 +171,7 @@ export function MapView({ mission }: { mission: Mission }) {
       ro.disconnect();
       window.removeEventListener("resize", place);
     };
-  }, [active?.index, active?.x, active?.y, reading]);
+  }, [active, reading]);
 
   return (
     <section ref={sectionRef} className="relative min-w-0 flex-1 overflow-hidden">
@@ -117,10 +180,12 @@ export function MapView({ mission }: { mission: Mission }) {
           <MissionMap
             mission={mission}
             pinned={pinnedPoint?.index ?? null}
-            onHover={setHovered}
+            onHover={handleHover}
             onMove={setPinnedPoint}
             onPin={(index) =>
-              setPinnedPoint((cur) => (cur && cur.index === index ? null : (hovered ?? { index, x: 0, y: 0 })))
+              setPinnedPoint((cur) =>
+                cur && cur.index === index ? null : (hovered ?? { index, x: 0, y: 0 }),
+              )
             }
             onClearPin={() => setPinnedPoint(null)}
             onReady={(a) => (api.current = a)}
@@ -129,7 +194,9 @@ export function MapView({ mission }: { mission: Mission }) {
       </ClientOnly>
 
       <header className="pointer-events-none absolute left-5 top-5 z-[500] w-72 panel-surface bg-panel-strong/90 px-4 py-3 backdrop-blur">
-        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Missão selecionada</p>
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+          Missão selecionada
+        </p>
         <p className="mt-1 flex items-center gap-2 font-display text-2xl font-semibold">
           <Calendar className="h-5 w-5 text-primary" />
           {formatData(mission.data)}
@@ -156,14 +223,24 @@ export function MapView({ mission }: { mission: Mission }) {
       {active && reading && (
         <div
           ref={cardRef}
-          className="pointer-events-none absolute z-[600]"
-          style={{ left: pos?.left ?? -9999, top: pos?.top ?? -9999, visibility: pos ? "visible" : "hidden" }}
+          className="pointer-events-auto absolute z-[600]"
+          onPointerEnter={cancelHoverClear}
+          onPointerLeave={() => {
+            if (!pinnedPoint) handleHover(null);
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
+          style={{
+            left: pos?.left ?? -9999,
+            top: pos?.top ?? -9999,
+            visibility: pos ? "visible" : "hidden",
+          }}
         >
           <ReadingCard reading={reading} mission={mission} />
         </div>
       )}
 
-      <div className="absolute bottom-6 left-1/2 z-[500] flex -translate-x-1/2 flex-col overflow-hidden rounded-md border border-border bg-panel-strong/85 backdrop-blur">
+      <div className="absolute bottom-10 left-3 z-[500] flex overflow-hidden rounded-md border border-border bg-panel-strong/85 backdrop-blur">
         <button
           type="button"
           aria-label="Aproximar"
@@ -176,19 +253,19 @@ export function MapView({ mission }: { mission: Mission }) {
           type="button"
           aria-label="Afastar"
           onClick={() => api.current?.zoomOut()}
-          className="grid h-9 w-9 place-items-center border-t border-border text-foreground"
+          className="grid h-9 w-9 place-items-center border-l border-border text-foreground"
         >
           <Minus className="h-4 w-4" />
         </button>
+        <button
+          type="button"
+          aria-label="Centralizar no trajeto"
+          onClick={() => api.current?.fit()}
+          className="grid h-9 w-9 place-items-center border-l border-border text-foreground"
+        >
+          <Crosshair className="h-4 w-4" />
+        </button>
       </div>
-      <button
-        type="button"
-        aria-label="Centralizar no trajeto"
-        onClick={() => api.current?.fit()}
-        className="absolute bottom-6 left-[calc(50%+3.5rem)] z-[500] grid h-9 w-9 place-items-center rounded-full border border-border bg-panel-strong/85 text-foreground backdrop-blur"
-      >
-        <Crosshair className="h-4 w-4" />
-      </button>
     </section>
   );
 }
