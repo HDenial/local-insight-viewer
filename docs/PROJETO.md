@@ -273,7 +273,7 @@ Codifica os frames `sensor_msgs/Image` em JPEG com OpenCV.
 
 ```sh
 python3 tools/mavros_db3_to_csv.py --db3-path data/bags/teste1 \
-  --mission-id OP-20260416 --intervalo 5s
+  --mission-id OP-20260416 --intervalo 5s --topic-sensor mono_p /mavros/rangefinder/rangefinder
 ```
 
 O formato completo dos CSVs gerados está em [`docs/FORMATO-CSV.md`](FORMATO-CSV.md).
