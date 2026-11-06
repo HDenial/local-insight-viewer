@@ -1,12 +1,14 @@
-# Local Data Display
+# Objetivo
 
-preciso criar um frontend, seguindo o blueprint desta imagem. Neste estilo e com essas cores. Os dados lidos não virão de um banco de dados real neste momento mas sim de um CSV em uma dada pasta local. o frontend deve operar localmente e se sediar em uma porta local que possa ser exposta através de um tunel cloudflare.
+criar um frontend, seguindo o blueprint desta imagem. Neste estilo e com essas cores. Os dados lidos não virão de um banco de dados real neste momento mas sim de um CSV em uma dada pasta local. o frontend deve operar localmente e se sediar em uma porta local que possa ser exposta através de um tunel cloudflare.
 
-This project was built with [Lovable](https://lovable.dev).
+This project was originally built with [Lovable](https://lovable.dev).
+
+further updated by hand and with help of Chatgpt Codex
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b9147338-3976-4d0c-8d0c-f88ee682c92c).
+Continue developing this project.
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.
