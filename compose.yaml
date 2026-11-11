@@ -1,9 +1,9 @@
 services:
-  web:
+  scan:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: web
+    container_name: scan
     restart: unless-stopped
     volumes:
       - ./data:/src/data:ro
