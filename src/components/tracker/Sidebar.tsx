@@ -68,7 +68,7 @@ export function Sidebar({
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className={i === 2 ? "h-6 w-6" : "h-5 w-5"} />
           </button>
         );
       })}

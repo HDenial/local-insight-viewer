@@ -1,0 +1,10 @@
+node_modules
+.output
+.nitro
+.wrangler
+dist
+.git
+.env
+.env.*
+*.log
+data

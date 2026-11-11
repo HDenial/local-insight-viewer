@@ -42,3 +42,8 @@ npm i
 npm run dev
 cloudflared tunnel --url http://localhost:8080
 ```
+
+
+##name matching
+##se nome x está no header, permitir que o usuário y veja arquivo de nome x nas opções
+##consultar dados em tabela do servidor ao inves de pasta local

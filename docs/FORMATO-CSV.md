@@ -143,6 +143,14 @@ O rangefinder pode ser incluído na coluna `mono_p`:
 ```bash
   --topic-sensor mono_p /mavros/rangefinder/rangefinder
 ```
+
+```bash
+python3 tools/mavros_db3_to_csv.py \
+  --db3-path data/bags/teste1 \
+  --mission-id OP-20260416 \
+  --intervalo 5s \
+  --topic-sensor mono_p /mavros/rangefinder/rangefinder
+```
 #### Iniciar Túnel
 
 cloudflared tunnel --url http://localhost:8080
