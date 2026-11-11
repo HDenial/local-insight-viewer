@@ -39,7 +39,9 @@ export const Route = createFileRoute("/")({
     <div role="alert" className="grid min-h-screen place-items-center p-8 text-center">
       <div>
         <h1 className="font-display text-xl font-semibold">Não foi possível ler o CSV</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {error instanceof Error ? error.message : "Erro inesperado ao carregar os dados."}
+        </p>
       </div>
     </div>
   ),
